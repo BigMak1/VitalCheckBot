@@ -1,9 +1,0 @@
-python-telegram-bot
-langchain-gigachat
-langchain
-chromadb
-langchain-chroma
-aiologger
-pydantic
-pydantic-settings
-dotenv
