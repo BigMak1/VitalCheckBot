@@ -36,6 +36,7 @@ var/
 
 # Logs
 *.log
+/logs
 
 # Virtual environment
 .env
@@ -47,3 +48,7 @@ venv/
 
 # VS Code
 .vscode/
+
+# Other json files
+/feedback_stats.json
+/disliked_responses.json

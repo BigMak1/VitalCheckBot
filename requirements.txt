@@ -1,9 +1,10 @@
 python-telegram-bot
-langchain-gigachat
-langchain
-chromadb
-langchain-chroma
-aiologger
 pydantic
 pydantic-settings
-dotenv
+langchain
+langchain_community
+langchain-openai
+langchain-gigachat
+langchain-chroma
+langgraph
+chromadb

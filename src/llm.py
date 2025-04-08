@@ -12,10 +12,9 @@ logger = logging.getLogger(__name__)
 class LLMService:
     def __init__(self, rag_service: RagService):
         self.llm = GigaChat(
-            credentials=settings.llm.gigachat_credentials,
-            model=settings.llm.gigachat_model,
-            scope=settings.llm.gigachat_scope,
-            verify_ssl_certs=settings.llm.gigachat_verify_ssl_certs
+            credentials=settings.gigachat.api_key,
+            model=settings.gigachat.model,
+            verify_ssl_certs=False
         )
         self.rag_service = rag_service
         logger.debug("LLMService initialized.") # Логируем инициализацию
@@ -23,7 +22,7 @@ class LLMService:
         # Шаблон промпта (важная часть!)
         self.system_prompt = (
             "Ты - полезный ассистент, который отвечает на вопросы, опираясь на предоставленный контекст.\n"
-            "Если ты не можешь ответить, используя только контекст, скажи, что не знаешь.\n"
+            "Если ты не можешь ответить, используя только контекст, скажи, что не знаешь и нужно обратиться к Дементьеву Александру.\n"
             "Контекст:"
             "\n\n"
             "{context}"
