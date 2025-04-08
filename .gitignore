@@ -36,6 +36,7 @@ var/
 
 # Logs
 *.log
+/logs
 
 # Virtual environment
 .env

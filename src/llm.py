@@ -12,10 +12,9 @@ logger = logging.getLogger(__name__)
 class LLMService:
     def __init__(self, rag_service: RagService):
         self.llm = GigaChat(
-            credentials=settings.llm.gigachat_credentials,
-            model=settings.llm.gigachat_model,
-            scope=settings.llm.gigachat_scope,
-            verify_ssl_certs=settings.llm.gigachat_verify_ssl_certs
+            credentials=settings.gigachat.api_key,
+            model=settings.gigachat.model,
+            verify_ssl_certs=False
         )
         self.rag_service = rag_service
         logger.debug("LLMService initialized.") # Логируем инициализацию
