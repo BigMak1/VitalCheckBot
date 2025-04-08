@@ -10,8 +10,8 @@ api_key.txt
 catalog_id.txt
 
 # BD
-data/retrivial_embeddings/chroma_db/*
-!data/retrivial_embeddings/chroma_db/*.sqlite3
+src/vector_store/chroma_db/*
+!src/vector_store/chroma_db/*.sqlite3
 
 # Distribution / packaging
 .Python

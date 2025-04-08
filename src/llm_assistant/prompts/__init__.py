@@ -1,0 +1,1 @@
+from .prompts import router_prompt, rag_prompt, other_prompt

@@ -1,4 +1,6 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import constants
+from telegram import ReplyKeyboardMarkup
 from telegram.ext import (
     CommandHandler,
     MessageHandler,
@@ -8,11 +10,7 @@ from telegram.ext import (
 )
 import logging
 
-from src.retriever import RagService
-from src.llm import LLMService
-
-rag_service = RagService()
-llm_service = LLMService(rag_service)
+from src.llm_assistant import process_query
 
 logger = logging.getLogger(__name__)
 
@@ -23,23 +21,29 @@ async def help_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def error(update: Update, context: ContextTypes.DEFAULT_TYPE):
     """Логируем ошибки, вызванные обновлениями."""
-    logger.error(f"Update: {update} caused error: {context.error}")
-    if update and update.message: # проверка update
+    logger.error(f"Сaused error: {context.error}")
+    if update and update.message:
         update.message.reply_text("Произошла ошибка при обработке запроса.")
 
 
 async def start(update: Update, context: CallbackContext) -> None:
     """Обработчик команды /start."""
-    # keyboard = [[InlineKeyboardButton("Задать вопрос", callback_data="ask")]]
-    # reply_markup = InlineKeyboardMarkup(keyboard)   reply_markup=reply_markup
     await update.message.reply_text("Привет! Я бот-вопрошатель. Задавай вопросы!")
 
 
 async def handle_message(update: Update, context: CallbackContext) -> None:
     """Обработчик текстовых сообщений (вопросов)."""
-    question = update.message.text
-    answer = llm_service.generate_answer(question)
-    await update.message.reply_text(answer)
+
+    # Добавляем процесс что бот печатает ответ
+    await context.bot.send_chat_action(chat_id=update.effective_chat.id, action=constants.ChatAction.TYPING)
+
+    user_message = update.message.text
+    thread_config = {"configurable": {"thread_id": update.message.chat.id}}
+
+    result = process_query(stream_input=user_message, thread_config=thread_config)
+    response = result["response"]
+    logger.info(f"Final response to user in tg: {response}")
+    await update.message.reply_text(response, parse_mode="Markdown")
 
 
 def setup_handlers(application):

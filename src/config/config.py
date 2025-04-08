@@ -1,31 +1,42 @@
 import os
-from dotenv import load_dotenv
-from pydantic import Field
-from pydantic_settings import BaseSettings
+from pydantic import BaseModel
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
-load_dotenv()
-
-
-class LLMSettings(BaseSettings):
-    """Настройки для LLM"""
-    gigachat_credentials: str = Field(..., alias="GIGACHAT_CREDENTIALS")
-    gigachat_scope: str = Field("GIGACHAT_API_PERS", alias="GIGACHAT_SCOPE")
-    gigachat_model: str = Field("GigaChat-Max", alias="GIGACHAT_MODEL")
-    gigachat_verify_ssl_certs: bool = Field(False, alias="GIGACHAT_VERIFY_SSL_CERTS")
+class TelegramConfig(BaseModel):
+    bot_token: str
 
 
-class EmbeddingsSettings(BaseSettings):
-    """Настройки для Embeddings"""
-    embeddings_credentials: str = Field(..., alias="EMBEDDINGS_CREDENTIALS")
-    embeddings_model: str = Field("Embeddings", alias="EMBEDDINGS_MODEL")
+class OpenaiConfig(BaseModel):
+    api_key: str
+    proxy_url: str
+    chat_model: str = "gpt-4o-mini"
+    embeddings_model: str = "text-embedding-3-large"
+
+
+class GigachatConfig(BaseModel):
+    api_key: str
+    model: str = "GigaChat-2-Max"
+
+
+class LangsmithConfig(BaseModel):
+    api_key: str
+    tracing: str
 
 
 class Settings(BaseSettings):
-    telegram_bot_token: str = Field(..., alias="TELEGRAM_BOT_TOKEN")  # "..." означает, что поле обязательно 
-    llm: LLMSettings = Field(default_factory=LLMSettings) # Добавляем вложенный объект настроек LLM
-    embeddings: EmbeddingsSettings = Field(default_factory=EmbeddingsSettings)
-    chroma_db_path: str = Field("retrivial_embeddings/chroma_db", alias="CHROMA_DB_PATH")
-    log_level: str = Field("INFO", alias="LOG_LEVEL")  # Уровень логирования
+    model_config = SettingsConfigDict(
+        case_sensitive=False,
+        env_nested_delimiter="__",
+        # env_prefix="FASTAPI__",
+        env_file=("../.env", ".env"),
+        extra = "ignore"
+    )
+    telegram: TelegramConfig
+    openai: OpenaiConfig
+    gigachat: GigachatConfig
+    langsmith: LangsmithConfig
 
 
 settings = Settings()
+os.environ["LANGSMITH_API_KEY"] = settings.langsmith.api_key
+os.environ["LANGSMITH_TRACING"] = settings.langsmith.tracing
